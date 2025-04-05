@@ -24,7 +24,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="w-full py-8 flex-1 flex flex-col justify-center bg-gradient-to-b from-indigo-950/50 to-background">
+      <section className="w-full py-8 flex-1 flex flex-col justify-center bg-gradient-to-t from-card to-background">
         <div className="px-4 space-y-8">
           <div className="flex flex-col items-center text-center space-y-4">
             <svg 
@@ -53,7 +53,7 @@ export default function Home() {
                 Get Started
               </Button>
             </Link>
-            <Link href="/login" className="w-full">
+            <Link href="/home" className="w-full">
               <Button variant="outline" className="w-full" size="lg">
                 Sign In
               </Button>
