@@ -133,7 +133,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center">
             <div className="relative h-40 w-full flex items-end mb-2">
               <div 
-                className="w-2 rounded-full bg-muted"
+                className="w-5 rounded-full bg-muted"
                 style={{ height: '40%' }}
               ></div>
             </div>
@@ -144,7 +144,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center">
             <div className="relative h-40 w-full flex items-end mb-2">
               <div 
-                className="w-2 rounded-full bg-yellow-500"
+                className="w-5 rounded-full bg-yellow-500"
                 style={{ height: '70%' }}
               ></div>
             </div>
@@ -155,7 +155,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center">
             <div className="relative h-40 w-full flex items-end mb-2">
               <div 
-                className="w-2 rounded-full bg-green-500"
+                className="w-5 rounded-full bg-green-500"
                 style={{ height: '85%' }}
               ></div>
             </div>
@@ -166,7 +166,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center">
             <div className="relative h-40 w-full flex items-end mb-2">
               <div 
-                className="w-2 rounded-full bg-green-500"
+                className="w-5 rounded-full bg-green-500"
                 style={{ height: '90%' }}
               ></div>
             </div>
@@ -177,7 +177,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center">
             <div className="relative h-40 w-full flex items-end mb-2">
               <div 
-                className="w-2 rounded-full bg-yellow-500"
+                className="w-5 rounded-full bg-yellow-500"
                 style={{ height: '60%' }}
               ></div>
             </div>
@@ -188,7 +188,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center">
             <div className="relative h-40 w-full flex items-end mb-2">
               <div 
-                className="w-2 rounded-full bg-yellow-500"
+                className="w-5 rounded-full bg-yellow-500"
                 style={{ height: '75%' }}
               ></div>
             </div>
@@ -199,7 +199,7 @@ export default function HomePage() {
           <div className="flex flex-col items-center">
             <div className="relative h-40 w-full flex items-end mb-2">
               <div 
-                className="w-2 rounded-full bg-muted"
+                className="w-5 rounded-full bg-muted"
                 style={{ height: '0%' }}
               ></div>
             </div>
