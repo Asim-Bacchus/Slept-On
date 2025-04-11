@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import "../animations.css"; // Add this import
+
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"alarms" | "bedtime">("alarms");
@@ -123,96 +125,100 @@ export default function HomePage() {
       </div>
       
       {/* Weekly Sleep Progress Section */}
-      <div className="mb-6">
-        <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">
-          Week of 4/6/2025
-        </h3>
-        
-        <div className="flex justify-between items-end h-44 px-2">
-          {/* Sunday */}
-          <div className="flex flex-col items-center">
-            <div className="relative h-40 w-full flex items-end mb-2">
-              <div 
-                className="w-5 rounded-full bg-muted"
-                style={{ height: '40%' }}
-              ></div>
-            </div>
-            <span className="text-xs text-muted-foreground">S</span>
-          </div>
-          
-          {/* Monday */}
-          <div className="flex flex-col items-center">
-            <div className="relative h-40 w-full flex items-end mb-2">
-              <div 
-                className="w-5 rounded-full bg-yellow-500"
-                style={{ height: '70%' }}
-              ></div>
-            </div>
-            <span className="text-xs text-muted-foreground">M</span>
-          </div>
-          
-          {/* Tuesday */}
-          <div className="flex flex-col items-center">
-            <div className="relative h-40 w-full flex items-end mb-2">
-              <div 
-                className="w-5 rounded-full bg-green-500"
-                style={{ height: '85%' }}
-              ></div>
-            </div>
-            <span className="text-xs text-muted-foreground">T</span>
-          </div>
-          
-          {/* Wednesday */}
-          <div className="flex flex-col items-center">
-            <div className="relative h-40 w-full flex items-end mb-2">
-              <div 
-                className="w-5 rounded-full bg-green-500"
-                style={{ height: '90%' }}
-              ></div>
-            </div>
-            <span className="text-xs font-medium">W</span>
-          </div>
-          
-          {/* Thursday */}
-          <div className="flex flex-col items-center">
-            <div className="relative h-40 w-full flex items-end mb-2">
-              <div 
-                className="w-5 rounded-full bg-yellow-500"
-                style={{ height: '60%' }}
-              ></div>
-            </div>
-            <span className="text-xs text-muted-foreground">T</span>
-          </div>
-          
-          {/* Friday */}
-          <div className="flex flex-col items-center">
-            <div className="relative h-40 w-full flex items-end mb-2">
-              <div 
-                className="w-5 rounded-full bg-yellow-500"
-                style={{ height: '75%' }}
-              ></div>
-            </div>
-            <span className="text-xs text-muted-foreground">F</span>
-          </div>
-          
-          {/* Saturday */}
-          <div className="flex flex-col items-center">
-            <div className="relative h-40 w-full flex items-end mb-2">
-              <div 
-                className="w-5 rounded-full bg-muted"
-                style={{ height: '0%' }}
-              ></div>
-            </div>
-            <span className="text-xs text-muted-foreground">S</span>
-          </div>
+      {/* Weekly Sleep Progress Section */}
+<div className="mb-6">
+  <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">
+    Week of 4/6/2025
+  </h3>
+  
+  {/* Add bubble styling around the graph, similar to dream posts */}
+  <div className="rounded-xl bg-blue-500/5 border border-blue-500/10 p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-md">
+    <div className="flex justify-between items-end h-44 px-2">
+      {/* Sunday */}
+      <div className="flex flex-col items-center">
+        <div className="relative h-40 w-full flex items-end mb-2">
+          <div 
+            className="w-5 rounded-full bg-muted bar-animation delay-1"
+            style={{ height: '40%' }}
+          ></div>
         </div>
-        
-        <div className="flex justify-between px-2 text-xs text-muted-foreground mt-2">
-          <span>0h</span>
-          <span>Goal: 8h</span>
-          <span>12h</span>
-        </div>
+        <span className="text-xs text-muted-foreground">S</span>
       </div>
+      
+      {/* Monday */}
+      <div className="flex flex-col items-center">
+        <div className="relative h-40 w-full flex items-end mb-2">
+          <div 
+            className="w-5 rounded-full bg-yellow-500 bar-animation delay-2"
+            style={{ height: '70%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">M</span>
+      </div>
+      
+      {/* Tuesday */}
+      <div className="flex flex-col items-center">
+        <div className="relative h-40 w-full flex items-end mb-2">
+          <div 
+            className="w-5 rounded-full bg-green-500 bar-animation delay-3"
+            style={{ height: '85%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">T</span>
+      </div>
+      
+      {/* Wednesday */}
+      <div className="flex flex-col items-center">
+        <div className="relative h-40 w-full flex items-end mb-2">
+          <div 
+            className="w-5 rounded-full bg-green-500 bar-animation delay-4"
+            style={{ height: '90%' }}
+          ></div>
+        </div>
+        <span className="text-xs font-medium">W</span>
+      </div>
+      
+      {/* Thursday */}
+      <div className="flex flex-col items-center">
+        <div className="relative h-40 w-full flex items-end mb-2">
+          <div 
+            className="w-5 rounded-full bg-yellow-500 bar-animation delay-5"
+            style={{ height: '60%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">T</span>
+      </div>
+      
+      {/* Friday */}
+      <div className="flex flex-col items-center">
+        <div className="relative h-40 w-full flex items-end mb-2">
+          <div 
+            className="w-5 rounded-full bg-yellow-500 bar-animation delay-6"
+            style={{ height: '75%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">F</span>
+      </div>
+      
+      {/* Saturday */}
+      <div className="flex flex-col items-center">
+        <div className="relative h-40 w-full flex items-end mb-2">
+          <div 
+            className="w-5 rounded-full bg-muted bar-animation delay-7"
+            style={{ height: '0%' }}
+          ></div>
+        </div>
+        <span className="text-xs text-muted-foreground">S</span>
+      </div>
+    </div>
+    
+    <div className="flex justify-between px-2 text-xs text-muted-foreground mt-2">
+      <span>0h</span>
+      <span>Goal: 8h</span>
+      <span>12h</span>
+    </div>
+  </div>
+</div>
       
       {/* Footer Navigation */}
       
