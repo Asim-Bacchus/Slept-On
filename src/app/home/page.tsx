@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import "../animations.css"; // Add this import
+import "@/app/animations.css"; // Add this import
 
 
 export default function HomePage() {

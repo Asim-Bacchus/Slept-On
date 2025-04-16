@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Dream, Comment } from '../../../types';
+import { Dream, Comment } from '@/types';
 import { getMoodColor, getMoodIcon, formatDate } from '@/lib/utils';
 import BackButton from '@/components/BackButton';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
