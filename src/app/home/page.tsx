@@ -125,7 +125,6 @@ export default function HomePage() {
       </div>
       
       {/* Weekly Sleep Progress Section */}
-      {/* Weekly Sleep Progress Section */}
 <div className="mb-6">
   <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">
     Week of 4/6/2025
