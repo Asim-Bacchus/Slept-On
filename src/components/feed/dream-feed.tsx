@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 interface DreamPost {
   id: string;
@@ -125,108 +126,122 @@ export default function DreamFeed() {
 
       <div className="space-y-8">
         {dreams.map((dream) => (
-          <div 
-            key={dream.id} 
-            className={`rounded-xl ${dream.color} border p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-md`}
-          >
-            <div className="flex items-start gap-3 mb-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={dream.user.avatar} />
-                <AvatarFallback>{dream.user.initials}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-medium text-sm">{dream.user.name}</span>
-                  <span className="text-xs">{dream.mood}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {dream.timestamp}
-                </p>
-              </div>
-              {dream.isPrivate && (
-                <div className="rounded-full bg-background/50 p-1">
-                  <LockIcon className="h-3 w-3 text-muted-foreground" />
-                </div>
-              )}
-            </div>
+  <div
+    key={dream.id}
+    className={`rounded-xl ${dream.color} border p-4 shadow-sm transition-all duration-300 ease-in-out hover:shadow-md`}
+  >
+    <div className="flex items-start gap-3 mb-3">
+      <Avatar className="h-8 w-8">
+        <AvatarImage src={dream.user.avatar} />
+        <AvatarFallback>{dream.user.initials}</AvatarFallback>
+      </Avatar>
+      <div className="flex-1">
+        <div className="flex items-center gap-1.5">
+          <span className="font-medium text-sm">{dream.user.name}</span>
+          <span className="text-xs">{dream.mood}</span>
+        </div>
+        <p className="text-xs text-muted-foreground">{dream.timestamp}</p>
+      </div>
+      {dream.isPrivate && (
+        <div className="rounded-full bg-background/50 p-1">
+          <LockIcon className="h-3 w-3 text-muted-foreground" />
+        </div>
+      )}
+    </div>
 
-            <div className="space-y-3 max-w-prose mb-3">
-              <p className="italic text-foreground/90 font-light leading-relaxed">
-                {dream.content}
+    {/* Clickable dream content */}
+    <Link href={`/dream/${dream.id}`}>
+      <div className="space-y-3 max-w-prose mb-3 cursor-pointer">
+        <p className="italic text-foreground/90 font-light leading-relaxed hover:underline">
+          {dream.content}
+        </p>
+      </div>
+    </Link>
+
+    {/* Comment + reaction buttons */}
+    <div className="flex items-center justify-between mt-4">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-xs text-muted-foreground hover:text-foreground h-7 px-2.5"
+        onClick={() => handleShowReply(dream.id)}
+      >
+        <MessageCircleIcon className="h-3.5 w-3.5 mr-1.5" />
+        {dream.replies.length > 0
+          ? `Replies (${dream.replies.length})`
+          : "Reply"}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="text-xs text-muted-foreground h-7 px-2.5"
+      >
+        <HeartIcon className="h-3.5 w-3.5 mr-1.5" />
+        Send love
+      </Button>
+    </div>
+
+    {/* Replies */}
+    {(dream.replies.length > 0 || showReplyInput === dream.id) && (
+      <div className="mt-4 pl-4 border-l-2 border-muted space-y-3">
+        {dream.replies.map((reply) => (
+          <div
+            key={reply.id}
+            className="flex items-start gap-2 animate-in slide-in-from-left-2 duration-300"
+          >
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={reply.user.avatar} />
+              <AvatarFallback className="text-[10px]">
+                {reply.user.initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <div className="bg-muted rounded-2xl rounded-tl-none px-3 py-2">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="font-medium text-xs">
+                    {reply.user.name}
+                  </span>
+                </div>
+                <p className="text-sm">{reply.content}</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1 ml-1">
+                {reply.timestamp}
               </p>
             </div>
-
-            <div className="flex items-center justify-between mt-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs text-muted-foreground hover:text-foreground h-7 px-2.5"
-                onClick={() => handleShowReply(dream.id)}
-              >
-                <MessageCircleIcon className="h-3.5 w-3.5 mr-1.5" />
-                {dream.replies.length > 0 ? `Replies (${dream.replies.length})` : "Reply"}
-              </Button>
-              
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs text-muted-foreground h-7 px-2.5"
-              >
-                <HeartIcon className="h-3.5 w-3.5 mr-1.5" />
-                Send love
-              </Button>
-            </div>
-
-            {(dream.replies.length > 0 || showReplyInput === dream.id) && (
-              <div className="mt-4 pl-4 border-l-2 border-muted space-y-3">
-                {dream.replies.map((reply) => (
-                  <div key={reply.id} className="flex items-start gap-2 animate-in slide-in-from-left-2 duration-300">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={reply.user.avatar} />
-                      <AvatarFallback className="text-[10px]">{reply.user.initials}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="bg-muted rounded-2xl rounded-tl-none px-3 py-2">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <span className="font-medium text-xs">{reply.user.name}</span>
-                        </div>
-                        <p className="text-sm">{reply.content}</p>
-                      </div>
-                      <p className="text-[10px] text-muted-foreground mt-1 ml-1">
-                        {reply.timestamp}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-
-                {showReplyInput === dream.id && (
-                  <div className="flex items-start gap-2 animate-in fade-in duration-200">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src="/your-avatar.jpg" />
-                      <AvatarFallback className="text-[10px]">YO</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 relative">
-                      <textarea
-                        className="w-full bg-muted rounded-2xl rounded-tl-none p-3 text-sm resize-none min-h-[80px] focus:outline-none focus:ring-1 focus:ring-primary"
-                        placeholder="Share your thoughts..."
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                      />
-                      <Button 
-                        size="sm" 
-                        className="absolute bottom-2 right-2 h-7 rounded-full" 
-                        disabled={!replyText.trim()}
-                      >
-                        <SendIcon className="h-3.5 w-3.5" />
-                        <span className="sr-only">Send</span>
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         ))}
+
+        {showReplyInput === dream.id && (
+          <div className="flex items-start gap-2 animate-in fade-in duration-200">
+            <Avatar className="h-6 w-6">
+              <AvatarImage src="/your-avatar.jpg" />
+              <AvatarFallback className="text-[10px]">YO</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 relative">
+              <textarea
+                className="w-full bg-muted rounded-2xl rounded-tl-none p-3 text-sm resize-none min-h-[80px] focus:outline-none focus:ring-1 focus:ring-primary"
+                placeholder="Share your thoughts..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+              />
+              <Button
+                size="sm"
+                className="absolute bottom-2 right-2 h-7 rounded-full"
+                disabled={!replyText.trim()}
+              >
+                <SendIcon className="h-3.5 w-3.5" />
+                <span className="sr-only">Send</span>
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+))}
+
+
       </div>
 
       <div className="fixed bottom-4 right-4">
