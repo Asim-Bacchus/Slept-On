@@ -18,8 +18,8 @@ Built with **Next.js**, **TailwindCSS**, and **Supabase**, this app is an experi
 
 ## 📸 Screenshots
 
-<img src="public/screenshots/feed.png" width="400" alt="Dream Feed" />
-<img src="public/screenshots/dream-detail.png" width="400" alt="Dream Detail Page" />
+<img src="public/screenshots/home-page.png" width="400" alt="Home Page" />
+<img src="public/screenshots/dream-feed.png" width="400" alt="Dream Feed" />
 
 ---
 
