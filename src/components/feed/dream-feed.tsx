@@ -58,7 +58,7 @@ export default function DreamFeed() {
       },
       content: "Had that recurring ocean dream again. I'm standing on the shore watching enormous waves, taller than skyscrapers, but they never reach me. I feel both terrified and calm at the same time.",
       mood: "🌊",
-      color: "bg-blue-500/5 border-blue-500/10",
+      color: "bg-amber-500/5 border-amber-500/10",
       timestamp: "Yesterday • Close friends",
       isPrivate: false,
       replies: [
