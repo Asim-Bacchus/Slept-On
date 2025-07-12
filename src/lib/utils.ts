@@ -38,3 +38,18 @@ export function formatDate(dateString: string): string {
     year: 'numeric',
   }).format(date);
 }
+
+export function getMoodBgClass(mood: string): string {
+  switch (mood) {
+    case 'calm':
+      return 'bg-blue-500/5 border-blue-500/10';
+    case 'surreal':
+      return 'bg-purple-500/5 border-purple-500/10';
+    case 'ocean':
+      return 'bg-blue-600/5 border-blue-600/10';
+    case 'nostalgic':
+      return 'bg-amber-500/5 border-amber-500/10';
+    default:
+      return 'bg-gray-400/5 border-gray-400/10';
+  }
+}
