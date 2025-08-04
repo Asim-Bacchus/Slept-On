@@ -91,7 +91,12 @@ export async function createComment(dreamId: string, content: string, userId: st
   };
 }
 
-export async function createDream(content: string, mood: string, visibility: 'public' | 'private' | 'close_friends', userId: string): Promise<Dream | null> {
+export async function createDream(
+  content: string,
+  mood: string,
+  visibility: 'public' | 'private' | 'close_friends',
+  userId: string
+): Promise<Dream | null> {
   const { data, error } = await supabase
     .from('dreams')
     .insert({
@@ -104,7 +109,7 @@ export async function createDream(content: string, mood: string, visibility: 'pu
     .single();
 
   if (error) {
-    console.error('Error creating dream:', error);
+    console.error('❌ Supabase insert error:', error.message, error.details, error.hint);
     return null;
   }
 

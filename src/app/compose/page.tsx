@@ -7,15 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createDream } from '@/lib/db';
 import { getCurrentUser, getUserInitials } from '@/lib/helpers';
+import { moodOptions } from '@/lib/utils';
 
-const MOODS = [
-  { value: 'nostalgic', label: 'Nostalgic', icon: '💭', bgClass: 'bg-amber-500/5 border-amber-500/10' },
-  { value: 'peaceful', label: 'Peaceful', icon: '🌙', bgClass: 'bg-blue-500/5 border-blue-500/10' },
-  { value: 'emotional', label: 'Emotional', icon: '🌊', bgClass: 'bg-cyan-500/5 border-cyan-500/10' },
-  { value: 'magical', label: 'Magical', icon: '✨', bgClass: 'bg-purple-500/5 border-purple-500/10' },
-  { value: 'anxious', label: 'Anxious', icon: '😰', bgClass: 'bg-red-500/5 border-red-500/10' },
-  { value: 'happy', label: 'Happy', icon: '😊', bgClass: 'bg-green-500/5 border-green-500/10' },
-];
+const MOODS = moodOptions;
+
 
 const VISIBILITY_OPTIONS = [
   { 
@@ -94,7 +89,7 @@ export default function ComposePage() {
             <div className="flex-1">
               <div className="flex items-center gap-1.5">
                 <span className="font-medium text-sm">{currentUser.name}</span>
-                <span className="text-xs">{selectedMood.icon}</span>
+                <span className="text-xs">{selectedMood.emoji}</span>
               </div>
               <p className="text-xs text-muted-foreground">
                 Now • {selectedVisibility.label}
@@ -142,7 +137,7 @@ export default function ComposePage() {
               className="w-full flex items-center justify-between p-3 bg-background border border-muted rounded-xl hover:border-muted-foreground/50 transition-colors"
             >
               <div className="flex items-center gap-2">
-                <span className="text-lg">{selectedMood.icon}</span>
+                <span className="text-lg">{selectedMood.emoji}</span>
                 <span className="text-sm font-medium">{selectedMood.label}</span>
               </div>
               <ChevronDownIcon className={`h-4 w-4 text-muted-foreground transition-transform ${showMoodDropdown ? 'rotate-180' : ''}`} />
@@ -160,10 +155,11 @@ export default function ComposePage() {
                     }}
                     className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted/50 transition-colors"
                   >
-                    <span className="text-lg">{mood.icon}</span>
+                    <span className="text-lg">{mood.emoji}</span>
                     <span className="text-sm font-medium">{mood.label}</span>
                   </button>
                 ))}
+
               </div>
             )}
           </div>

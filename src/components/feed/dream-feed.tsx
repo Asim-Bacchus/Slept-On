@@ -11,11 +11,14 @@ import { Button } from '@/components/ui/button';
 import { LockIcon, MessageCircleIcon, HeartIcon, PencilIcon, PlusIcon } from '@/components/icons';
 import { getUserInitials } from '@/lib/helpers';
 import { formatDate, getMoodBgClass, getMoodIcon } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
+
+
 
 export default function DreamFeed() {
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const pathname = usePathname();
   useEffect(() => {
     async function load() {
       const data = await getDreams();
@@ -23,7 +26,7 @@ export default function DreamFeed() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [pathname]); // reruns when user returns to the feed
 
   if (loading) {
     return <p className="text-center mt-10 text-muted-foreground">Loading dreams...</p>;
@@ -33,9 +36,11 @@ export default function DreamFeed() {
     <div className="flex flex-col min-h-screen bg-background p-4 pb-20">
       <header className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-medium">Dream Space</h1>
-        <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0">
-          <PlusIcon className="h-4 w-4" />
-        </Button>
+        <Link href="/compose">
+          <Button size="sm" variant="ghost" className="rounded-full w-8 h-8 p-0">
+            <PlusIcon className="h-4 w-4" />
+          </Button>
+        </Link>
       </header>
 
       <div className="space-y-8">
