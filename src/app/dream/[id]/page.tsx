@@ -1,18 +1,13 @@
 // src/app/dream/[id]/page.tsx
 import { notFound } from 'next/navigation';
 import { getDreamById, getComments } from '@/lib/db';
-import { getMoodIcon, formatDate } from '@/lib/utils';
+import { formatDate, getColorClass } from '@/lib/utils';
 import {
   getUserInitials,
   getCurrentUser,
-  getVisibilityLabel,
-  getMoodBgClass,
 } from '@/lib/helpers';
 import BackButton from '@/components/BackButton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LockIcon } from '@/components/icons';
-import CommentCard from '@/components/comment-card';
-import CommentForm from '@/components/comment-form';
+import CommentSection from '@/components/CommentSection';
 
 export default async function DreamPage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -20,8 +15,8 @@ export default async function DreamPage({ params }: { params: { id: string } }) 
   const dream = await getDreamById(id);
   if (!dream) return notFound();
 
-  const currentUser = getCurrentUser(); // Still mock
-  const isOwner = dream.user?.id === currentUser.id;
+  const currentUser = getCurrentUser();
+  const isOwner = dream.user_id === currentUser.id;
 
   // Handle private dream access
   if (dream.visibility === 'private' && !isOwner) return notFound();
@@ -31,72 +26,90 @@ export default async function DreamPage({ params }: { params: { id: string } }) 
     ? await getComments(dream.id)
     : [];
 
-  const moodIcon = getMoodIcon(dream.mood);
-  const visibilityText = getVisibilityLabel(dream.visibility);
-  const bgColorClass = getMoodBgClass(dream.mood);
+  const visibilityLabel =
+    dream.visibility === 'private'
+      ? 'Just for me'
+      : dream.visibility === 'close_friends'
+      ? 'Close friends'
+      : 'Public';
 
   return (
-    <div className="flex flex-col min-h-screen bg-background px-4 py-6 pb-16">
+    <div className="flex flex-col min-h-screen bg-background p-4 pb-20">
       <div className="max-w-md mx-auto w-full">
         <div className="mb-6">
           <BackButton />
         </div>
 
-        <div className={`rounded-xl ${bgColorClass} border p-5 shadow-sm transition-all duration-300 ease-in-out`}>
-          <div className="flex items-start gap-3 mb-4">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={dream.user?.avatar} />
-              <AvatarFallback>
+        {/* Dream Card - matching feed design */}
+        <div className={`rounded-2xl ${getColorClass(dream.color_key ?? 'gray')} p-5 transition-all duration-200 ease-in-out`}>
+          {/* Header: User info and metadata in one clean line */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+              <span className="text-xs font-medium">
                 {getUserInitials(dream.user?.name || '??')}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <div className="flex items-center gap-1.5">
-                <span className="font-medium">{dream.user?.name}</span>
-                <span className="text-sm">{moodIcon}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {formatDate(dream.created_at)} • {visibilityText}
-              </p>
+              </span>
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <span className="font-medium text-sm text-foreground">{dream.user?.name}</span>
+              {dream.emoji && <span className="text-sm">{dream.emoji}</span>}
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground">{formatDate(dream.created_at)}</span>
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground">{visibilityLabel}</span>
             </div>
             {dream.visibility === 'private' && (
-              <div className="rounded-full bg-background/50 p-1">
-                <LockIcon className="h-3 w-3 text-muted-foreground" />
-              </div>
+              <LockIcon className="h-3.5 w-3.5 text-muted-foreground" />
             )}
           </div>
 
-          <div className="space-y-4 max-w-prose">
-            <p className="italic text-foreground/90 font-light leading-relaxed">
+          {/* Content */}
+          <div className="space-y-3">
+            {dream.title && (
+              <h1 className="font-medium text-lg text-foreground">
+                {dream.title}
+              </h1>
+            )}
+            <p className="text-foreground/80 leading-relaxed">
               {dream.content}
             </p>
           </div>
         </div>
 
+        {/* Comments Section */}
         {dream.visibility !== 'private' && (
-          <div className="mt-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium">
-                {comments.length > 0 ? `Replies (${comments.length})` : 'Replies'}
-              </h3>
+          <CommentSection dreamId={dream.id} initialComments={comments} />
+        )}
+
+        {/* Private Dream Notice */}
+        {dream.visibility === 'private' && (
+          <div className="mt-6 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted/30 rounded-full">
+              <LockIcon className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                This is a private dream - only you can see it
+              </span>
             </div>
-
-            {comments.length > 0 ? (
-              <div className="space-y-3">
-                {comments.map(comment => (
-                  <CommentCard key={comment.id} comment={comment} />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground italic mb-4">
-                No replies yet. Be the first to share your thoughts.
-              </p>
-            )}
-
-            <CommentForm dreamId={dream.id} />
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function LockIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      {...props}
+    >
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   );
 }

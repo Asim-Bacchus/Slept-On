@@ -82,17 +82,38 @@ export function getMoodIcon(mood: string): string {
   return moodOptions.find((m) => m.value === mood)?.emoji || "🛌";
 }
 
-export function getMoodBgClass(mood: string): string {
-  const match = moodOptions.find((m) => m.value === mood);
-  return match ? `${match.bgClass} ${match.borderColor}` : "bg-gray-400/10 border-gray-400/30";
+// 🎨 FIXED: Subtle accent colors only - consistent background with colored left border
+export function getColorClass(colorKey: string): string {
+  const COLORS: Record<string, string> = {
+    red: "bg-background border-l-4 border-l-red-400 border border-muted",
+    orange: "bg-background border-l-4 border-l-orange-400 border border-muted",
+    yellow: "bg-background border-l-4 border-l-yellow-400 border border-muted",
+    green: "bg-background border-l-4 border-l-emerald-400 border border-muted",
+    blue: "bg-background border-l-4 border-l-blue-400 border border-muted",
+    purple: "bg-background border-l-4 border-l-purple-400 border border-muted",
+    pink: "bg-background border-l-4 border-l-pink-400 border border-muted",
+    black: "bg-background border-l-4 border-l-gray-800 border border-muted",
+    gray: "bg-background border-l-4 border-l-gray-500 border border-muted",
+    white: "bg-background border-l-4 border-l-gray-200 border border-muted",
+  };
+  return COLORS[colorKey] || "bg-background border-l-4 border-l-gray-400 border border-muted";
 }
 
-// 📆 Date formatting
+// 📆 Date formatting with relative time
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(date);
+  const now = new Date();
+  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  
+  if (diffInHours < 1) {
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    return diffInMinutes < 1 ? 'Just now' : `${diffInMinutes}m ago`;
+  } else if (diffInHours < 24) {
+    return `${diffInHours}h ago`;
+  } else if (diffInHours < 48) {
+    return 'Yesterday';
+  } else {
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays}d ago`;
+  }
 }

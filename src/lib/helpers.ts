@@ -18,11 +18,11 @@ export function getUserInitials(name: string): string {
  * Dummy current user getter.
  * Replace with real auth logic later.
  */
-export function getCurrentUser(): User {
+export function getCurrentUser() {
   return {
-    id: 'user1',
-    name: 'Alex Chen',
-    avatar: '/avatars/alex.jpg'
+    id: 'f9c8b5a2-0d72-4f89-ae03-f91fd3f4b732',
+    name: 'Asim Bacchus',
+    avatar: '/avatars/alex.jpg',
   };
 }
 

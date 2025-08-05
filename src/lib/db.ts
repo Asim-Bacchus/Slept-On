@@ -4,7 +4,7 @@ import type { Dream, Comment } from '@/types';
 
 // Mock user data - replace with real auth later
 const mockUsers: Record<string, { name: string; avatar?: string }> = {
-  'user1': { name: 'Alex Chen', avatar: '/avatars/alex.jpg' },
+  'user1': { name: 'Asim Bacchus', avatar: '/avatars/alex.jpg' },
   'user2': { name: 'Jordan Lee' },
   'user3': { name: 'Sam Taylor', avatar: '/avatars/sam.jpg' },
   'user4': { name: 'Taylor Kim', avatar: '/avatars/taylor.jpg' },
@@ -16,11 +16,12 @@ function getUserData(userId: string) {
   return mockUsers[userId] || { name: 'Unknown User' };
 }
 
-export async function getDreams(): Promise<Dream[]> {
+export async function getDreams(limit = 10, offset = 0): Promise<Dream[]> {
   const { data, error } = await supabase
     .from('dreams')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .select('id, title, content, emoji, color_key, visibility, created_at, user_id')
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) {
     console.error('Error fetching dreams:', error);
@@ -80,10 +81,11 @@ export async function createComment(dreamId: string, content: string, userId: st
     .select()
     .single();
 
-  if (error) {
-    console.error('Error creating comment:', error);
+    if (error) {
+    console.error('❌ Supabase insert error:', error.message, error.details, error.hint);
     return null;
   }
+
 
   return {
     ...data,
@@ -92,21 +94,26 @@ export async function createComment(dreamId: string, content: string, userId: st
 }
 
 export async function createDream(
+  title: string,
   content: string,
-  mood: string,
+  emoji: string,
+  colorKey: string,
   visibility: 'public' | 'private' | 'close_friends',
   userId: string
 ): Promise<Dream | null> {
   const { data, error } = await supabase
     .from('dreams')
     .insert({
+      title,
       content,
-      mood,
+      emoji,
+      color_key: colorKey,
       visibility,
       user_id: userId
     })
     .select()
     .single();
+
 
   if (error) {
     console.error('❌ Supabase insert error:', error.message, error.details, error.hint);

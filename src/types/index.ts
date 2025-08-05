@@ -8,11 +8,13 @@ export interface User {
 export interface Dream {
   id: string;
   content: string;
-  mood: string;
+  title?: string;
+  emoji?: string;
+  color_key?: string;
   visibility: 'public' | 'private' | 'close_friends';
   created_at: string;
   user_id: string;
-  user?: User; // For joined queries
+  user?: User; // Optional joined user data
 }
 
 export interface Comment {
