@@ -34,7 +34,8 @@ export default function DreamFeed() {
   const [replyText, setReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
   const [loadingComments, setLoadingComments] = useState<Record<string, boolean>>({});
-  
+  const [showAllComments, setShowAllComments] = useState<Record<string, boolean>>({});
+
   const pathname = usePathname();
   const currentUser = getCurrentUser();
 
@@ -256,29 +257,48 @@ export default function DreamFeed() {
                   )}
 
                   {/* Existing Comments */}
-                  {dreamComments.map((comment) => (
-                    <div key={comment.id} className="flex items-start gap-3">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={comment.user?.avatar} />
-                        <AvatarFallback className="text-[10px]">
-                          {getUserInitials(comment.user?.name || 'Unknown')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className={`rounded-2xl px-3 py-2 ${bubbleColorClass}`}>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-xs text-foreground">
-                              {comment.user?.name}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {formatDate(comment.created_at)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-foreground/90">{comment.content}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  {/* Existing Comments */}
+{dreamComments
+  .slice(0, showAllComments[dream.id] ? dreamComments.length : 3)
+  .map((comment) => (
+    <div key={comment.id} className="flex items-start gap-3">
+      <Avatar className="h-6 w-6">
+        <AvatarImage src={comment.user?.avatar} />
+        <AvatarFallback className="text-[10px]">
+          {getUserInitials(comment.user?.name || 'Unknown')}
+        </AvatarFallback>
+      </Avatar>
+      <div className="flex-1 min-w-0">
+        <div className={`rounded-2xl px-3 py-2 ${bubbleColorClass}`}>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-medium text-xs text-foreground">
+              {comment.user?.name}
+            </span>
+            <span className="text-[10px] text-muted-foreground">
+              {formatDate(comment.created_at)}
+            </span>
+          </div>
+          <p className="text-sm text-foreground/90">{comment.content}</p>
+        </div>
+      </div>
+    </div>
+))}
+
+{/* View more / View less */}
+{dreamComments.length > 3 && (
+  <button
+    onClick={() =>
+      setShowAllComments((prev) => ({
+        ...prev,
+        [dream.id]: !prev[dream.id],
+      }))
+    }
+    className="text-xs text-muted-foreground hover:underline ml-9 mt-1"
+  >
+    {showAllComments[dream.id] ? 'View less' : `View all ${dreamComments.length} replies`}
+  </button>
+)}
+
 
                   {/* Reply Input */}
                   {showReplyInput === dream.id && (
