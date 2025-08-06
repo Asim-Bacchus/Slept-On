@@ -11,14 +11,33 @@ import type { Comment } from '@/types';
 interface CommentSectionProps {
   dreamId: string;
   initialComments: Comment[];
+  accentColor: string;
 }
 
-export default function CommentSection({ dreamId, initialComments }: CommentSectionProps) {
+// Function to get the accent color for comment bubbles
+function getCommentBubbleColor(accentColor: string): string {
+  const COLORS: Record<string, string> = {
+    red: "bg-red-500/20 border border-red-400/30",
+    orange: "bg-orange-500/20 border border-orange-400/30",
+    yellow: "bg-yellow-500/20 border border-yellow-400/30",
+    green: "bg-emerald-500/20 border border-emerald-400/30",
+    blue: "bg-blue-500/20 border border-blue-400/30",
+    purple: "bg-purple-500/20 border border-purple-400/30",
+    pink: "bg-pink-500/20 border border-pink-400/30",
+    black: "bg-gray-800/40 border border-gray-700/50",
+    gray: "bg-gray-500/20 border border-gray-400/30",
+    white: "bg-gray-200/30 border border-gray-300/40",
+  };
+  return COLORS[accentColor] || "bg-gray-500/20 border border-gray-400/30";
+}
+
+export default function CommentSection({ dreamId, initialComments, accentColor }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [replyText, setReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
   
   const currentUser = getCurrentUser();
+  const bubbleColorClass = getCommentBubbleColor(accentColor);
 
   const handleSubmitReply = async () => {
     if (!replyText.trim() || submittingReply) return;
@@ -56,16 +75,16 @@ export default function CommentSection({ dreamId, initialComments }: CommentSect
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="bg-card rounded-2xl px-4 py-3">
+                <div className={`rounded-2xl px-4 py-3 ${bubbleColorClass}`}>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="font-medium text-sm text-card-foreground">
+                    <span className="font-medium text-sm text-foreground">
                       {comment.user?.name}
                     </span>
-                    <span className="text-xs text-card-foreground/60">
+                    <span className="text-xs text-muted-foreground">
                       {formatDate(comment.created_at)}
                     </span>
                   </div>
-                  <p className="text-sm text-card-foreground/90 leading-relaxed">
+                  <p className="text-sm text-foreground/90 leading-relaxed">
                     {comment.content}
                   </p>
                 </div>

@@ -1,4 +1,19 @@
-'use client';
+// Function to get comment bubble color matching dream accent
+function getCommentBubbleColor(accentColor: string): string {
+  const COLORS: Record<string, string> = {
+    red: "bg-red-500/20 border border-red-400/30",
+    orange: "bg-orange-500/20 border border-orange-400/30",
+    yellow: "bg-yellow-500/20 border border-yellow-400/30",
+    green: "bg-emerald-500/20 border border-emerald-400/30",
+    blue: "bg-blue-500/20 border border-blue-400/30",
+    purple: "bg-purple-500/20 border border-purple-400/30",
+    pink: "bg-pink-500/20 border border-pink-400/30",
+    black: "bg-gray-800/40 border border-gray-700/50",
+    gray: "bg-gray-500/20 border border-gray-400/30",
+    white: "bg-gray-200/30 border border-gray-300/40",
+  };
+  return COLORS[accentColor] || "bg-gray-500/20 border border-gray-400/30";
+}
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -27,6 +42,20 @@ export default function DreamFeed() {
     async function load() {
       const data = await getDreams();
       setDreams(data);
+      
+      // Load comments for all public dreams by default
+      const commentsData: Record<string, Comment[]> = {};
+      for (const dream of data) {
+        if (dream.visibility !== 'private' || dream.user_id === currentUser.id) {
+          try {
+            const dreamComments = await getComments(dream.id);
+            commentsData[dream.id] = dreamComments;
+          } catch (error) {
+            console.error('Error loading comments for dream:', dream.id, error);
+          }
+        }
+      }
+      setComments(commentsData);
       setLoading(false);
     }
     load();
@@ -53,7 +82,7 @@ export default function DreamFeed() {
     } else {
       setShowReplyInput(dreamId);
       setReplyText('');
-      await loadCommentsForDream(dreamId);
+      // Comments are already loaded, no need to fetch again
     }
   };
 
@@ -62,8 +91,7 @@ export default function DreamFeed() {
 
     setSubmittingReply(true);
     try {
-      const realUserId = 'f9c8b5a2-0d72-4f89-ae03-f91fd3f4b732';
-      const newComment = await createComment(dreamId, replyText.trim(), realUserId);
+      const newComment = await createComment(dreamId, replyText.trim(), currentUser.id);
       if (newComment) {
         setComments(prev => ({
           ...prev,
@@ -153,6 +181,7 @@ export default function DreamFeed() {
 
           const dreamComments = comments[dream.id] || [];
           const isLoadingComments = loadingComments[dream.id];
+          const bubbleColorClass = getCommentBubbleColor(dream.color_key ?? 'gray');
 
           return (
             <div
@@ -236,7 +265,7 @@ export default function DreamFeed() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <div className="bg-muted/50 rounded-2xl px-3 py-2">
+                        <div className={`rounded-2xl px-3 py-2 ${bubbleColorClass}`}>
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-medium text-xs text-foreground">
                               {comment.user?.name}

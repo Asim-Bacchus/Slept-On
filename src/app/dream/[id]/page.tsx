@@ -77,7 +77,11 @@ export default async function DreamPage({ params }: { params: { id: string } }) 
 
         {/* Comments Section */}
         {dream.visibility !== 'private' && (
-          <CommentSection dreamId={dream.id} initialComments={comments} />
+          <CommentSection 
+            dreamId={dream.id} 
+            initialComments={comments} 
+            accentColor={dream.color_key ?? 'gray'} 
+          />
         )}
 
         {/* Private Dream Notice */}
