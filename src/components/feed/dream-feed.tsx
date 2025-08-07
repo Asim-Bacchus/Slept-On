@@ -1,3 +1,15 @@
+import { useEffect, useState, useRef, useCallback } from 'react';
+import Link from 'next/link';
+import { getDreams, getComments, createComment } from '@/lib/db';
+import { Dream, Comment } from '@/types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { LockIcon, MessageCircleIcon, HeartIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons';
+import { getUserInitials, getCurrentUser } from '@/lib/helpers';
+import { formatDate, getColorClass } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
+import ReactionWheel, { PressAndDrag } from '@/components/ReactionWheel';
+
 // Function to get comment bubble color matching dream accent
 function getCommentBubbleColor(accentColor: string): string {
   const COLORS: Record<string, string> = {
@@ -15,17 +27,6 @@ function getCommentBubbleColor(accentColor: string): string {
   return COLORS[accentColor] || "bg-gray-500/20 border border-gray-400/30";
 }
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { getDreams, getComments, createComment } from '@/lib/db';
-import { Dream, Comment } from '@/types';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { LockIcon, MessageCircleIcon, HeartIcon, PencilIcon, PlusIcon, SendIcon } from '@/components/icons';
-import { getUserInitials, getCurrentUser } from '@/lib/helpers';
-import { formatDate, getColorClass } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
-
 export default function DreamFeed() {
   const [dreams, setDreams] = useState<Dream[]>([]);
   const [comments, setComments] = useState<Record<string, Comment[]>>({});
@@ -35,6 +36,12 @@ export default function DreamFeed() {
   const [submittingReply, setSubmittingReply] = useState(false);
   const [loadingComments, setLoadingComments] = useState<Record<string, boolean>>({});
   const [showAllComments, setShowAllComments] = useState<Record<string, boolean>>({});
+  
+  // Reaction wheel state
+  const [activeReactionWheel, setActiveReactionWheel] = useState<string | null>(null);
+  const [reactionCenterPos, setReactionCenterPos] = useState<{ x: number; y: number } | undefined>();
+  const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | undefined>();
+  const reactionButtonRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const pathname = usePathname();
   const currentUser = getCurrentUser();
@@ -107,6 +114,69 @@ export default function DreamFeed() {
       setSubmittingReply(false);
     }
   };
+
+  const handleReactionDragStart = useCallback((dreamId: string, startPos: { x: number; y: number }) => {
+    setActiveReactionWheel(dreamId);
+    setReactionCenterPos(startPos);
+    setDragPosition(startPos); // Initialize drag position
+  }, []);
+
+  const handleReactionDragMove = useCallback((pos: { x: number; y: number }) => {
+    setDragPosition(pos); // Update drag position in real-time
+  }, []);
+
+  const handleReactionDragEnd = useCallback((pos: { x: number; y: number }) => {
+    // Calculate which reaction was selected at the end position
+    if (reactionCenterPos && activeReactionWheel) {
+      const dx = pos.x - reactionCenterPos.x;
+      const dy = pos.y - reactionCenterPos.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance >= 30) {
+        // Calculate angle to determine selected reaction
+        let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        angle = (angle + 90 + 360) % 360;
+        
+        const REACTIONS = [
+          { emoji: '❤️', type: 'heart', label: 'Love' },
+          { emoji: '😂', type: 'lol', label: 'Funny' },
+          { emoji: '😱', type: 'shocking', label: 'Shocking' },
+          { emoji: '🤨', type: 'confusing', label: 'Confusing' },
+          { emoji: '🤢', type: 'gross', label: 'Gross' },
+          { emoji: '😔', type: 'pensive', label: 'Sad' },
+          { emoji: '😎', type: 'cool', label: 'Cool' },
+          { emoji: '💀', type: 'dead', label: 'Dead' },
+          { emoji: '😰', type: 'anxious', label: 'Anxious' },
+        ];
+        
+        const sectionAngle = 360 / REACTIONS.length;
+        const reactionIndex = Math.floor(angle / sectionAngle);
+        const selectedReaction = REACTIONS[reactionIndex]?.type;
+        
+        if (selectedReaction) {
+          handleReact(activeReactionWheel, selectedReaction);
+          return;
+        }
+      }
+    }
+    
+    // If no reaction selected, just close the wheel
+    handleReactionCancel();
+  }, [reactionCenterPos, activeReactionWheel]);
+
+  const handleReactionCancel = useCallback(() => {
+    setActiveReactionWheel(null);
+    setReactionCenterPos(undefined);
+    setDragPosition(undefined);
+  }, []);
+
+  const handleReact = useCallback((dreamId: string, reactionType: string) => {
+    console.log('Reaction for dream:', dreamId, 'Type:', reactionType);
+    // TODO: Implement actual reaction functionality here
+    setActiveReactionWheel(null);
+    setReactionCenterPos(undefined);
+    setDragPosition(undefined);
+  }, []);
 
   if (loading) {
     return (
@@ -235,14 +305,23 @@ export default function DreamFeed() {
                   {dreamComments.length > 0 ? `Reply (${dreamComments.length})` : 'Reply'}
                 </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs text-muted-foreground hover:text-foreground h-auto p-0"
+                <PressAndDrag
+                  onDragStart={(startPos) => handleReactionDragStart(dream.id, startPos)}
+                  onDragMove={handleReactionDragMove}
+                  onDragEnd={handleReactionDragEnd}
+                  onCancel={handleReactionCancel}
+                  className="text-xs text-muted-foreground hover:text-foreground h-auto p-0 cursor-pointer inline-flex items-center"
                 >
-                  <HeartIcon className="h-4 w-4 mr-1.5" />
-                  Send love
-                </Button>
+                  <div
+                    ref={(el) => {
+                      reactionButtonRefs.current[dream.id] = el;
+                    }}
+                    className="flex items-center"
+                  >
+                    <HeartIcon className="h-4 w-4 mr-1.5" />
+                    Drag to react
+                  </div>
+                </PressAndDrag>
               </div>
 
               {/* Comments Section */}
@@ -257,48 +336,46 @@ export default function DreamFeed() {
                   )}
 
                   {/* Existing Comments */}
-                  {/* Existing Comments */}
-{dreamComments
-  .slice(0, showAllComments[dream.id] ? dreamComments.length : 3)
-  .map((comment) => (
-    <div key={comment.id} className="flex items-start gap-3">
-      <Avatar className="h-6 w-6">
-        <AvatarImage src={comment.user?.avatar} />
-        <AvatarFallback className="text-[10px]">
-          {getUserInitials(comment.user?.name || 'Unknown')}
-        </AvatarFallback>
-      </Avatar>
-      <div className="flex-1 min-w-0">
-        <div className={`rounded-2xl px-3 py-2 ${bubbleColorClass}`}>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-xs text-foreground">
-              {comment.user?.name}
-            </span>
-            <span className="text-[10px] text-muted-foreground">
-              {formatDate(comment.created_at)}
-            </span>
-          </div>
-          <p className="text-sm text-foreground/90">{comment.content}</p>
-        </div>
-      </div>
-    </div>
-))}
+                  {dreamComments
+                    .slice(0, showAllComments[dream.id] ? dreamComments.length : 3)
+                    .map((comment) => (
+                      <div key={comment.id} className="flex items-start gap-3">
+                        <Avatar className="h-6 w-6">
+                          <AvatarImage src={comment.user?.avatar} />
+                          <AvatarFallback className="text-[10px]">
+                            {getUserInitials(comment.user?.name || 'Unknown')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className={`rounded-2xl px-3 py-2 ${bubbleColorClass}`}>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-xs text-foreground">
+                                {comment.user?.name}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">
+                                {formatDate(comment.created_at)}
+                              </span>
+                            </div>
+                            <p className="text-sm text-foreground/90">{comment.content}</p>
+                          </div>
+                        </div>
+                      </div>
+                  ))}
 
-{/* View more / View less */}
-{dreamComments.length > 3 && (
-  <button
-    onClick={() =>
-      setShowAllComments((prev) => ({
-        ...prev,
-        [dream.id]: !prev[dream.id],
-      }))
-    }
-    className="text-xs text-muted-foreground hover:underline ml-9 mt-1"
-  >
-    {showAllComments[dream.id] ? 'View less' : `View all ${dreamComments.length} replies`}
-  </button>
-)}
-
+                  {/* View more / View less */}
+                  {dreamComments.length > 3 && (
+                    <button
+                      onClick={() =>
+                        setShowAllComments((prev) => ({
+                          ...prev,
+                          [dream.id]: !prev[dream.id],
+                        }))
+                      }
+                      className="text-xs text-muted-foreground hover:underline ml-9 mt-1"
+                    >
+                      {showAllComments[dream.id] ? 'View less' : `View all ${dreamComments.length} replies`}
+                    </button>
+                  )}
 
                   {/* Reply Input */}
                   {showReplyInput === dream.id && (
@@ -371,6 +448,18 @@ export default function DreamFeed() {
           </Button>
         </Link>
       </div>
+
+      {/* Reaction Wheel - only render when active */}
+      <ReactionWheel
+        isOpen={!!activeReactionWheel}
+        onReact={(reactionType) => activeReactionWheel && handleReact(activeReactionWheel, reactionType)}
+        onClose={handleReactionCancel}
+        triggerRef={{
+          current: activeReactionWheel ? reactionButtonRefs.current[activeReactionWheel] || null : null
+        }}
+        centerPosition={reactionCenterPos}
+        dragPosition={dragPosition}
+      />
     </div>
   );
 }

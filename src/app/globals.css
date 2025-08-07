@@ -121,3 +121,104 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+/* Disable default mobile gestures that interfere with reaction wheel */
+.reaction-wheel-active {
+  -webkit-touch-callout: none !important; /* disable callout on iOS */
+  -webkit-user-select: none !important;   /* disable selection */
+  -webkit-tap-highlight-color: transparent !important; /* prevent blue flash */
+  touch-action: none !important;          /* block pan/zoom/selection */
+  user-select: none !important;
+  overflow: hidden !important;            /* prevent scroll */
+}
+
+/* Ensure the main app container allows normal scrolling when reaction wheel is not active */
+.app-container {
+  touch-action: pan-y pan-x; /* Allow normal scrolling */
+}
+
+/* Override for reaction buttons specifically */
+.reaction-button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
+}
+
+/* Prevent text selection highlight on the entire dream feed during interactions */
+.dream-feed-container {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Optional: Smooth out any iOS rubber band scrolling issues */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Ensure reaction wheel doesn't get affected by transform3d issues on iOS */
+.reaction-wheel {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Add this to your global CSS file (globals.css or app/globals.css) */
+
+/* Floating bubble animation for reaction wheel - simplified */
+@keyframes float-bubble {
+  0% {
+    transform: scale(0.6) translateY(8px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Disable default mobile gestures that interfere with reaction wheel */
+.reaction-wheel-active {
+  -webkit-touch-callout: none !important; /* disable callout on iOS */
+  -webkit-user-select: none !important;   /* disable selection */
+  -webkit-tap-highlight-color: transparent !important; /* prevent blue flash */
+  touch-action: none !important;          /* block pan/zoom/selection */
+  user-select: none !important;
+  overflow: hidden !important;            /* prevent scroll */
+}
+
+/* Ensure the main app container allows normal scrolling when reaction wheel is not active */
+.app-container {
+  touch-action: pan-y pan-x; /* Allow normal scrolling */
+}
+
+/* Override for reaction buttons specifically */
+.reaction-button {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
+}
+
+/* Prevent text selection highlight on the entire dream feed during interactions */
+.dream-feed-container {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Optional: Smooth out any iOS rubber band scrolling issues */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Ensure reaction wheel doesn't get affected by transform3d issues on iOS */
+.reaction-wheel {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
